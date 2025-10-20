@@ -2,6 +2,8 @@
 // Created by Manju Muralidharan on 10/19/25.
 //
 
+
+// test commit
 #ifndef HEAP_H
 #define HEAP_H
 
@@ -12,10 +14,11 @@ struct MinHeap {
     int data[64];
     int size;
 
-    MinHeap() { size = 0; }
+    MinHeap() { size = 0;}
 
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
+
     }
 
     int pop(int weightArr[]) {
