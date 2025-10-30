@@ -5,8 +5,10 @@
 using namespace std;
 
 struct MinHeap {
-    int data[64]; // array of size 64
+    int data[64]; // holds values of node indexes
     int size;
+    // weightArr[] holds the node weights (which ones are lighter or heavier)
+    // use weightArr[data[i]] to grab weight of index
 
     MinHeap() { // constructor
         size = 0;
@@ -14,106 +16,99 @@ struct MinHeap {
 
     void push(int idx, int weightArr[]) {
         // TODO: insert index at end of heap, restore order using upheap()
-        weightArr[size] = idx; // index is the key, counts frequency
-        // restore
+        // index is the key, counts frequency
+        data[size] = idx;
+        // restore order
+        upheap(size, weightArr);
         size++;
-        upheap(size-1, weightArr);
+        // read priorities in weightArr
     }
 
     int pop(int weightArr[]) {
         // TODO: remove and return smallest index
+        // empty list condition
         if (size == 0) {
             cout << "Nothing to pop" << endl;
             return -1;
         }
         else {
-            // size - 1 is the last spot
-            int pop = weightArr[size - 1];
+            // save last element to pop
+            int pop = data[size - 1];
             cout << "Selected element to pop is: " << pop << endl;
-            weightArr[0] = pop;
-            downheap(size-1, weightArr);
-            size--; // last element gets cut off
+            // replace first element
+            data[0] = pop;
+            size--;
+            // restore order, read from weightArr
+            downheap(0, weightArr);
+            // update size
             cout << "Popped " << pop << endl;
-            downheap(size-1, weightArr);
             return pop;
         }
     }
 
-    // **** check if the parent < child too, min heap condition
     void upheap(int pos, int weightArr[]) {
         // TODO: swap child upward while smaller than parent
-
-        int parent = weightArr[(pos - 1) / 2];
-        int child = weightArr[pos];
-
         // while the parent exists
-        while (pos > 0) { // pos is updated to the latest parent index
-            // update all values at beginning so parent and child will keep moving up
-            int parentIndex = (pos - 1) / 2;
-            parent = weightArr[(pos - 1) / 2];
-            child = weightArr[pos];
+        while (pos > 0) {
+            // update all values
+            int parentIndex = (pos - 1) / 2; // ultimately relies on pos
+            int parent = weightArr[data[parentIndex]];
+            int child = weightArr[data[pos]];
 
-            // before performing
             // if child is greater than parent
-
-            if (child < parent) { // fixed condition
-                // they are references, so the value saves
-                swap(weightArr[pos], weightArr[(pos - 1) / 2]);
+            if (child < parent) {
+                cout << "comparing " << child << " and " << parent << endl;
+                // compare weight values and swap data values if necessary, both at pos
+                swap(data[pos], data[parentIndex]);
+                cout << "swapping " << data[pos] << " and " << data[parentIndex] << endl;
                 // update child index
                 pos = parentIndex;
-                if ((pos * 2) + 2 >= size) {
-                    continue; // disregards everything below it and continues with while loop
-                }
-                int leftChild = weightArr[(pos * 2) + 1];
-                int rightChild = weightArr[(pos * 2) + 2];
-                if (leftChild >= rightChild) {
-                    swap( weightArr[(pos * 2) + 1], weightArr[(pos * 2) + 2]);
-                } // do NOT sort by weight, but rather the data[]
-                // compare both at the same indexes
-
-
             }
             else {
                 break;
-
-            } // size works with upheap
+            }
         }
     }
 
+    // helper to get the smaller child
     int findMinChildIndex (int pos, int weightArr[]) {
 
-        int leftChildIndex = (pos * 2) + 1;
+        int leftChildIndex = (pos * 2) + 1; // ultimately relies on pos
         int rightChildIndex = (pos * 1) + 2;
 
-        int leftChild = weightArr[leftChildIndex];
-        int rightChild = weightArr[rightChildIndex];
-        int parent = weightArr[pos];
-
-        // int length = sizeof(weightArr) / 4;
+        // check bounds for children
         if (leftChildIndex < size && rightChildIndex < size) {
 
+            int leftChild = weightArr[data[leftChildIndex]];
+            int rightChild = weightArr[data[rightChildIndex]];
+
+            // if left child is smaller
             if (leftChild <= rightChild) {
                 return leftChildIndex;
             }
+            // if right child is smaller
             else {
                 return rightChildIndex;
             }
         }
+
+        // if out of bounds
         return -1;
     }
 
     void downheap(int pos, int weightArr[]) {
         // TODO: swap parent downward while larger than any child
-        // pos is the parent index
-        // cout << "start: pos is " << pos << endl;
-
+        // pos = parent index
         // loop until end of array
-        while (pos <= size) {
+        while (pos < size) {
+            // index = index of min weight
             int index = findMinChildIndex(pos, weightArr);
             cout << "index is: " << index << endl;
-            cout << "min child is: " << weightArr[index] << endl;
+            // cout << "min child is: " << weightArr[data[index]] << endl;
+            // if out of bounds
             if (index != -1) {
-                swap(weightArr[index], weightArr[pos]);
+                // swap data values instead of weight values
+                swap(data[index], data[pos]);
                 pos = index;
             }
             else {
