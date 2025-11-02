@@ -25,9 +25,6 @@ struct MinHeap {
     }
 
     int pop(int weightArr[]) {
-
-        // logic: save element at size[0] (smallest index), then replace root with last element
-
         // TODO: remove and return smallest index
         // empty list condition
         if (size == 0) {
@@ -35,16 +32,16 @@ struct MinHeap {
             return -1;
         }
         else {
-            // save smallest index
+            // save index with smallest weight
             int pop = data[0];
-            cout << "Selected element to pop is: " << pop << endl;
+            // cout << "Selected element to pop is: " << pop << endl;
             // replace root with last element
             data[0] = data[size - 1];
             size--;
             // restore order of first element (now largest), read from weightArr
             downheap(0, weightArr);
             // update size
-            cout << "Popped " << pop << endl;
+            // cout << "Popped " << pop << endl;
             return pop;
         }
     }
