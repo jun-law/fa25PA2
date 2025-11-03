@@ -105,13 +105,6 @@ int buildEncodingTree(int nextFree) {
         heap.push(i, weightArr);
     }
 
-    // test
-    cout << "weightArr in sorted order: " << endl;
-    for (int i = 0; i < nextFree; i++) {
-        cout << weightArr[heap.data[i]] << " "; // weights should be in order
-    }
-    cout << endl;
-
     while (heap.size > 1) {
         // pop smallest nodes indices (from data)
         int left = heap.pop(weightArr);
@@ -129,8 +122,8 @@ int buildEncodingTree(int nextFree) {
         // add entry to weightArr
         weightArr[nextFree] = sum;
 
-        // update size and next index
-        heap.size++;
+        // push new index into heap
+        heap.push(nextFree, weightArr);
         nextFree++;
     }
     // only 5 elements in array rn
@@ -141,7 +134,7 @@ int buildEncodingTree(int nextFree) {
 
     // return index of last remaining node
     int lastIndex = nextFree - 1;
-    cout << "return " << lastIndex << endl;
+    // cout << "return " << lastIndex << endl;
     return lastIndex;
 }
 
@@ -152,18 +145,61 @@ void generateCodes(int root, string codes[]) {
     // Left edge adds '0', right edge adds '1'.
     // Record code when a leaf node is reached.
 
+    // push and pop the root
+    stack<pair<int, string>> s;
+    cout << "pushing root index " << root << ", this is value " << weightArr[root] << " in weightArr" << endl;
+    s.push({root, ""});
+
+    // while it is not a leaf node
+
+    while (!s.empty()) {
+
+        // look up root's left and right children
+        pair<int,string> top = s.top();
+        s.pop();
+        int leftChild = leftArr[top.first];
+        int rightChild = rightArr[top.first];
+
+        string currentCode = top.second;
+
+        if (rightChild == -1 && leftChild == -1) {
+            //cout << "HIT LEAF NODE" << endl;
+            // add code to next empty slot in codes array
+           // cout << top.second << endl;
+            int leafIndex = top.first;
+            codes[leafIndex] = top.second;
+            continue;
+        }
+
+        // push right child
+        if (rightChild != -1) {
+            s.push({rightChild, currentCode + "1"}); // go right, add 1
+        }
+        if (leftChild != -1) {
+            s.push({leftChild, currentCode + "0"}); // go left, add 0
+        }
+    }
 
 }
 
 // Step 5: Print table and encoded message
 void encodeMessage(const string& filename, string codes[]) {
     cout << "\nCharacter : Code\n";
+
     for (int i = 0; i < 26; ++i) {
         if (!codes[i].empty())
-            cout << char('a' + i) << " : " << codes[i] << "\n";
+            cout << charArr[i] << " : " << codes[i] << "\n";
     }
 
     cout << "\nEncoded message:\n";
+    // freq[i] at codes[i]
+    // for every element in codes[], for every frequency, print out the encoding this many times
+    for (int i = 0; i <= sizeof(codes) / 4; i++) {
+        for (int j = 0; j < sizeof(codes) / 4; j++) {
+            cout << codes[i] << " ";
+        }
+    }
+    cout << endl;
 
     ifstream file(filename);
     char ch;
