@@ -5,27 +5,24 @@
 using namespace std;
 
 struct MinHeap {
-    int data[64]; // holds values of node indexes
+    int data[64]; // holds values of node indices
     int size;
-    // weightArr[] holds the node weights (which ones are lighter or heavier)
-    // use weightArr[data[i]] to grab weight of index
 
-    MinHeap() { // constructor
+    MinHeap() {
         size = 0;
     }
 
     void push(int idx, int weightArr[]) {
-        // TODO: insert index at end of heap, restore order using upheap()
+
         // index is the key, counts frequency
         data[size] = idx;
         // restore order
         upheap(size, weightArr);
         size++;
-        // read priorities in weightArr
     }
 
     int pop(int weightArr[]) {
-        // TODO: remove and return smallest index
+
         // empty list condition
         if (size == 0) {
             cout << "Nothing to pop" << endl;
@@ -34,20 +31,18 @@ struct MinHeap {
         else {
             // save index with smallest weight
             int pop = data[0];
-            // cout << "Selected element to pop is: " << pop << endl;
             // replace root with last element
             data[0] = data[size - 1];
             size--;
             // restore order of first element (now largest), read from weightArr
             downheap(0, weightArr);
             // update size
-            // cout << "Popped " << pop << endl;
             return pop;
         }
     }
 
     void upheap(int pos, int weightArr[]) {
-        // TODO: swap child upward while smaller than parent
+
         // while the parent exists
         while (pos > 0) {
             // update all values
@@ -68,11 +63,11 @@ struct MinHeap {
         }
     }
 
-    // helper to get the smaller child
+    // helper to find the smaller child
     int findMinChildIndex (int pos, int weightArr[]) {
 
-        int leftChildIndex = (pos * 2) + 1; // ultimately relies on pos
-        int rightChildIndex = (pos * 1) + 2;
+        int leftChildIndex = (pos * 2) + 1;
+        int rightChildIndex = (pos * 2) + 2;
 
         // check bounds for children
         if (leftChildIndex < size && rightChildIndex < size) {
@@ -95,17 +90,13 @@ struct MinHeap {
     }
 
     void downheap(int pos, int weightArr[]) {
-        // TODO: swap parent downward while larger than any child
         // pos = parent index
-        // loop until end of array
         while (pos < size) {
             // index = index of min weight
             int index = findMinChildIndex(pos, weightArr);
-            // cout << "index is: " << index << endl;
-            // cout << "min child is: " << weightArr[data[index]] << endl;
-            // if out of bounds
+            // if children are not out of bounds
             if (index != -1) {
-                // swap data values instead of weight values
+                // swap node index values (not weights)
                 swap(data[index], data[pos]);
                 pos = index;
             }
