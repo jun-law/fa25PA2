@@ -89,16 +89,6 @@ int createLeafNodes(int freq[]) {
 
 // Step 3: Build the encoding tree using heap operations
 int buildEncodingTree(int nextFree) {
-    // TODO:
-    // 1. Create a MinHeap object. DONE
-    // 2. Push all leaf node indices into the heap. DONE
-    // 3. While the heap size is greater than 1: DONE
-    //    - Pop two smallest nodes DONE
-    //    - Create a new parent node with combined weight DONE
-    //    - Set left/right pointers DONE
-    //    - Push new parent index back into the heap DONE
-    // 4. Return the index of the last remaining node (root) DONE
-
     // push all items onto heap
     MinHeap heap;
     for (int i = 0; i < nextFree; i++) {
@@ -127,10 +117,10 @@ int buildEncodingTree(int nextFree) {
         nextFree++;
     }
     // only 5 elements in array rn
-    for (int i = 0; i < 5; i++) {
-        cout << weightArr[i] << " ";
-    }
-    cout << endl;
+    // for (int i = 0; i < 5; i++) {
+        // cout << weightArr[i] << " ";
+    // }
+    // cout << endl;
 
     // return index of last remaining node
     int lastIndex = nextFree - 1;
@@ -140,32 +130,26 @@ int buildEncodingTree(int nextFree) {
 
 // Step 4: Use an STL stack to generate codes
 void generateCodes(int root, string codes[]) {
-    // TODO:
-    // Use stack<pair<int, string>> to simulate DFS traversal.
-    // Left edge adds '0', right edge adds '1'.
-    // Record code when a leaf node is reached.
 
-    // push and pop the root
+    // push root
     stack<pair<int, string>> s;
-    cout << "pushing root index " << root << ", this is value " << weightArr[root] << " in weightArr" << endl;
+    // cout << "pushing root index " << root << ", this is value " << weightArr[root] << " in weightArr" << endl;
     s.push({root, ""});
 
     // while it is not a leaf node
-
     while (!s.empty()) {
 
         // look up root's left and right children
         pair<int,string> top = s.top();
         s.pop();
-        int leftChild = leftArr[top.first];
+        int leftChild = leftArr[top.first]; // first is the index
         int rightChild = rightArr[top.first];
 
+        // grab the code
         string currentCode = top.second;
 
+        // if it is a leaf node, assign a valid code
         if (rightChild == -1 && leftChild == -1) {
-            //cout << "HIT LEAF NODE" << endl;
-            // add code to next empty slot in codes array
-           // cout << top.second << endl;
             int leafIndex = top.first;
             codes[leafIndex] = top.second;
             continue;
@@ -175,6 +159,7 @@ void generateCodes(int root, string codes[]) {
         if (rightChild != -1) {
             s.push({rightChild, currentCode + "1"}); // go right, add 1
         }
+        // push left child
         if (leftChild != -1) {
             s.push({leftChild, currentCode + "0"}); // go left, add 0
         }
@@ -186,21 +171,16 @@ void generateCodes(int root, string codes[]) {
 void encodeMessage(const string& filename, string codes[]) {
     cout << "\nCharacter : Code\n";
 
+    // print each letter with correct encoding
     for (int i = 0; i < 26; ++i) {
         if (!codes[i].empty())
             cout << charArr[i] << " : " << codes[i] << "\n";
     }
 
     cout << "\nEncoded message:\n";
-    // freq[i] at codes[i]
-    // for every element in codes[], for every frequency, print out the encoding this many times
-    for (int i = 0; i <= sizeof(codes) / 4; i++) {
-        for (int j = 0; j < sizeof(codes) / 4; j++) {
-            cout << codes[i] << " ";
-        }
-    }
-    cout << endl;
 
+    // read characters from input file
+    string input = "";
     ifstream file(filename);
     char ch;
     while (file.get(ch)) {
@@ -208,7 +188,17 @@ void encodeMessage(const string& filename, string codes[]) {
             ch = ch - 'A' + 'a';
         if (ch >= 'a' && ch <= 'z')
             cout << codes[ch - 'a'];
+            input += ch;
     }
     cout << "\n";
+
+    // print encoded message
+    for (char c : input) {
+        for (int i = 0; i < input.length(); i++) {
+            if (c == charArr[i]) {
+                cout << codes[i] << " ";
+            }
+        }
+    }
     file.close();
 }
