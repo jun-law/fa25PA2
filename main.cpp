@@ -88,6 +88,12 @@ int createLeafNodes(int freq[]) {
 }
 
 // Step 3: Build the encoding tree using heap operations
+/*
+ * Construct an encoding tree with each parent having the sum of minimum two weights
+ * Uses minheap to choose the minimum weights each time
+ * nextFree keeps track of next available index of leftArr[], rightArr[] and weightArr[]
+ * returns the last index of the encoding tree
+ */
 int buildEncodingTree(int nextFree) {
     // push all items onto heap
     MinHeap heap;
@@ -116,24 +122,25 @@ int buildEncodingTree(int nextFree) {
         heap.push(nextFree, weightArr);
         nextFree++;
     }
-    // only 5 elements in array rn
-    // for (int i = 0; i < 5; i++) {
-        // cout << weightArr[i] << " ";
-    // }
-    // cout << endl;
 
     // return index of last remaining node
     int lastIndex = nextFree - 1;
-    // cout << "return " << lastIndex << endl;
     return lastIndex;
 }
 
 // Step 4: Use an STL stack to generate codes
+/*
+  * Use a stack to traverse the encoding tree, starting with the current node, left child, and right child,
+    repeating until leaf node is reached
+  * Adds 0 when going left, and 1 when going right to assign codes
+  * root - the index of the first node
+  * codes[] - holds the encoding for each leaf node
+  */
 void generateCodes(int root, string codes[]) {
 
     // push root
     stack<pair<int, string>> s;
-    // cout << "pushing root index " << root << ", this is value " << weightArr[root] << " in weightArr" << endl;
+
     s.push({root, ""});
 
     // while it is not a leaf node
@@ -150,8 +157,7 @@ void generateCodes(int root, string codes[]) {
 
         // if it is a leaf node, assign a valid code
         if (rightChild == -1 && leftChild == -1) {
-            int leafIndex = top.first;
-            codes[leafIndex] = top.second;
+            codes[charArr[top.first] - 'a'] = top.second;
             continue;
         }
 
@@ -164,17 +170,22 @@ void generateCodes(int root, string codes[]) {
             s.push({leftChild, currentCode + "0"}); // go left, add 0
         }
     }
-
 }
 
 // Step 5: Print table and encoded message
+/*
+ * Prints each letter with its respective code
+ * Reads input file and prints encoded message based on each character in order
+ * filename - the name of the input file
+ * codes[] - holds the encoding for each leaf node
+ */
 void encodeMessage(const string& filename, string codes[]) {
     cout << "\nCharacter : Code\n";
 
     // print each letter with correct encoding
     for (int i = 0; i < 26; ++i) {
         if (!codes[i].empty())
-            cout << charArr[i] << " : " << codes[i] << "\n";
+            cout << char('a' + i) << " : " << codes[i] << "\n";
     }
 
     cout << "\nEncoded message:\n";
@@ -190,15 +201,7 @@ void encodeMessage(const string& filename, string codes[]) {
             cout << codes[ch - 'a'];
             input += ch;
     }
-    cout << "\n";
+    cout << endl;
 
-    // print encoded message
-    for (char c : input) {
-        for (int i = 0; i < input.length(); i++) {
-            if (c == charArr[i]) {
-                cout << codes[i] << " ";
-            }
-        }
-    }
     file.close();
 }
